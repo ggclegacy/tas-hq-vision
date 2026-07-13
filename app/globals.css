@@ -805,6 +805,298 @@ button {
   }
 }
 
+/* Chapter 03 — TAS HQ Vision Overview */
+.vision-overview-environment {
+  position: absolute;
+  inset: 0;
+  min-height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(32, 55, 40, 0.2), transparent 32%),
+    radial-gradient(ellipse at 50% -5%, rgba(163, 133, 78, 0.1), transparent 44%),
+    linear-gradient(145deg, #020303 0%, #080a09 45%, #010202 100%);
+  isolation: isolate;
+}
+
+.overview-architecture {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+  background:
+    linear-gradient(90deg, transparent 0 9%, rgba(181, 154, 104, 0.045) 9% 9.08%, transparent 9.08% 90.92%, rgba(181, 154, 104, 0.045) 90.92% 91%, transparent 91%),
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 5.5rem;
+  mask-image: linear-gradient(to bottom, black, transparent 92%);
+}
+
+.overview-architecture::before,
+.overview-architecture::after {
+  position: absolute;
+  top: 9rem;
+  bottom: 4rem;
+  width: 34vw;
+  border: 1px solid rgba(181, 154, 104, 0.06);
+  content: "";
+  transform: perspective(900px) rotateY(64deg);
+}
+
+.overview-architecture::before { left: -21vw; }
+.overview-architecture::after { right: -21vw; transform: perspective(900px) rotateY(-64deg); }
+
+.overview-shell {
+  width: min(100%, 92rem);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 1.3rem clamp(1rem, 4vw, 4.5rem) 2.8rem;
+}
+
+.overview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.overview-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: #777a76;
+  font-size: 0.57rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.overview-progress span { display: grid; grid-template-columns: auto auto; column-gap: 0.42rem; white-space: nowrap; }
+.overview-progress b { color: #9e865b; font-weight: 500; }
+.overview-progress i { grid-column: 2; color: #545752; font-size: 0.43rem; font-style: normal; letter-spacing: 0.15em; }
+.overview-progress em { width: 2.3rem; height: 1px; background: linear-gradient(90deg, #6f5b38, rgba(111, 91, 56, 0.18)); }
+.overview-progress [aria-current="step"] { color: #dedbd3; }
+.overview-progress [aria-current="step"] b,
+.overview-progress [aria-current="step"] i { color: #b69a66; }
+
+.overview-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.15rem 0.7rem;
+  max-width: 42rem;
+}
+
+.overview-controls button {
+  min-height: 2rem;
+  border: 0;
+  background: transparent;
+  color: #777a76;
+  cursor: pointer;
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 240ms ease;
+}
+
+.overview-controls button:hover,
+.overview-controls button:focus-visible { color: #d2bd94; }
+.overview-controls button:focus-visible { outline: 1px solid #866f46; outline-offset: 4px; }
+.overview-controls > span { width: 1px; height: 1.4rem; margin-top: 0.3rem; background: rgba(181, 154, 104, 0.22); }
+
+.overview-heading {
+  width: min(100%, 54rem);
+  margin: clamp(2.4rem, 5vh, 4.5rem) auto 0;
+  text-align: center;
+}
+
+.overview-heading > span,
+.overview-explore > span {
+  color: #a88e5e;
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.overview-heading h1 {
+  margin: 0.75rem 0 0;
+  color: #eeebe4;
+  font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+  font-size: clamp(2.45rem, 4.3vw, 4.25rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+
+.overview-heading p {
+  max-width: 42rem;
+  margin: 1rem auto 0;
+  color: #93958f;
+  font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+  font-size: clamp(0.98rem, 1.5vw, 1.2rem);
+  line-height: 1.55;
+}
+
+.pillar-system { width: min(100%, 68rem); margin: 2rem auto 0; }
+.pillar-system-stage { position: relative; height: 27.5rem; }
+.pillar-connections { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.pillar-connection { fill: none; stroke: rgba(165, 138, 86, 0.17); stroke-width: 1; vector-effect: non-scaling-stroke; transition: stroke 600ms ease, stroke-width 600ms ease; }
+.pillar-orbit { fill: none; stroke: rgba(165, 138, 86, 0.11); stroke-width: 1; stroke-dasharray: 2 8; transform-origin: center; animation: overview-orbit 40s linear infinite; }
+.pillar-active-service .pillar-connection-service,
+.pillar-active-standard .pillar-connection-standard,
+.pillar-active-collective .pillar-connection-collective,
+.pillar-active-growth .pillar-connection-growth { stroke: rgba(190, 158, 96, 0.72); stroke-width: 1.5; }
+
+.overview-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: 11.2rem;
+  height: 11.2rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(189, 157, 98, 0.28);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, rgba(36, 50, 40, 0.74), rgba(4, 6, 5, 0.97) 68%);
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.7), inset 0 0 2.5rem rgba(183, 152, 94, 0.06);
+  pointer-events: none;
+}
+
+.overview-core-ring { position: absolute; inset: -1rem; border: 1px solid rgba(181, 154, 104, 0.1); border-radius: 50%; }
+.overview-core-ring::after { position: absolute; inset: 0.4rem; border: 1px dashed rgba(181, 154, 104, 0.13); border-radius: inherit; content: ""; animation: overview-orbit 55s linear infinite reverse; }
+.overview-core-emblem { position: relative; width: 5.5rem; height: 5.5rem; filter: drop-shadow(0 0.8rem 1.3rem rgba(0, 0, 0, 0.8)); }
+.overview-core p { margin: 0.1rem 0 0; color: #d8c29a; font-family: "Iowan Old Style", serif; font-size: 1rem; letter-spacing: 0.08em; }
+.overview-core > span:last-child { color: #59635b; font-size: 0.42rem; letter-spacing: 0.19em; text-transform: uppercase; }
+
+.pillar-node {
+  position: absolute;
+  display: grid;
+  width: 15.5rem;
+  min-height: 5.3rem;
+  grid-template-columns: 1.7rem 2.8rem 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid rgba(181, 154, 104, 0.14);
+  background: linear-gradient(112deg, rgba(16, 19, 17, 0.94), rgba(5, 7, 6, 0.9));
+  color: #aaa9a3;
+  cursor: pointer;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  transition: border-color 400ms ease, background 400ms ease, color 400ms ease;
+}
+
+.pillar-node::before { position: absolute; inset: 0; border: 1px solid transparent; content: ""; pointer-events: none; }
+.pillar-node:hover,
+.pillar-node:focus-visible,
+.pillar-node[aria-pressed="true"] { border-color: rgba(187, 154, 92, 0.55); background: linear-gradient(112deg, rgba(32, 40, 34, 0.96), rgba(8, 11, 9, 0.94)); color: #e1ded7; }
+.pillar-node:focus-visible { outline: 1px solid #b59a68; outline-offset: 4px; }
+.pillar-node i { position: absolute; top: -1px; right: -1px; width: 1.5rem; height: 1px; background: #a98e5c; opacity: 0.35; }
+.pillar-node[aria-pressed="true"] i { opacity: 1; }
+.pillar-node-service { top: 3rem; left: 0; }
+.pillar-node-standard { top: 3rem; right: 0; }
+.pillar-node-collective { bottom: 3rem; left: 0; }
+.pillar-node-growth { right: 0; bottom: 3rem; }
+.pillar-node-index { color: #675a42; font-size: 0.5rem; letter-spacing: 0.14em; }
+.pillar-node-glyph { width: 2.5rem; height: 2.5rem; color: #a38957; }
+.pillar-node-glyph svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.1; }
+.pillar-node-glyph svg path[fill] { fill: currentColor; }
+.pillar-node-copy { display: flex; min-width: 0; flex-direction: column; }
+.pillar-node-copy strong { font-family: "Iowan Old Style", serif; font-size: 1.15rem; font-weight: 400; letter-spacing: 0.02em; }
+.pillar-node-copy small { margin-top: 0.12rem; color: #656963; font-size: 0.46rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.pillar-node[aria-pressed="true"] .pillar-node-copy small { color: #9c8a68; }
+
+.pillar-detail-frame { position: relative; min-height: 5.7rem; border-top: 1px solid rgba(181, 154, 104, 0.13); border-bottom: 1px solid rgba(181, 154, 104, 0.13); }
+.pillar-detail { display: grid; min-height: 5.7rem; grid-template-columns: 11rem 1fr minmax(13rem, 0.7fr); align-items: center; gap: 1.5rem; padding: 0.8rem 1rem; }
+.pillar-detail > div { display: grid; grid-template-columns: 2rem 1fr; align-items: center; }
+.pillar-detail > div span { color: #715e3c; font-size: 0.54rem; }
+.pillar-detail strong { color: #d8d3c9; font-family: "Iowan Old Style", serif; font-size: 1.35rem; font-weight: 400; }
+.pillar-detail p { margin: 0; color: #8f928c; font-size: 0.72rem; line-height: 1.6; }
+.pillar-detail em { border-left: 1px solid rgba(181, 154, 104, 0.22); color: #a99166; font-family: "Iowan Old Style", serif; font-size: 0.86rem; font-style: normal; line-height: 1.5; padding-left: 1.5rem; }
+
+.overview-narration-zone { display: flex; min-height: 2.6rem; align-items: center; justify-content: center; gap: 0.8rem; margin-top: 1.2rem; }
+.overview-narration-zone span { color: #9f8658; font-size: 0.5rem; letter-spacing: 0.2em; text-transform: uppercase; }
+.overview-narration-zone span::after { content: " /"; color: #4d493f; }
+.overview-narration-zone p { margin: 0; color: #777b75; font-family: "Iowan Old Style", serif; font-size: 0.82rem; }
+.overview-transcript { width: min(100%, 48rem); margin: 0.4rem auto 0; border: 1px solid rgba(181, 154, 104, 0.16); background: rgba(4, 6, 5, 0.92); padding: 1rem 1.2rem; }
+.overview-transcript strong { color: #aa905f; font-size: 0.52rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; }
+.overview-transcript p { margin: 0.55rem 0 0; color: #878a84; font-family: "Iowan Old Style", serif; font-size: 0.8rem; line-height: 1.65; }
+
+.overview-explore { display: flex; flex-direction: column; align-items: center; margin-top: 1.4rem; }
+.overview-explore button {
+  display: flex;
+  width: min(100%, 22rem);
+  min-height: 3.9rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.65rem;
+  border: 1px solid rgba(190, 158, 96, 0.48);
+  background: linear-gradient(100deg, rgba(25, 29, 26, 0.92), rgba(8, 10, 9, 0.95));
+  color: #dbd5c9;
+  cursor: pointer;
+  padding: 0 1.3rem;
+  transition: border-color 300ms ease, transform 300ms ease, background 300ms ease;
+}
+.overview-explore button:hover,
+.overview-explore button:focus-visible { border-color: #c2a46c; background: linear-gradient(100deg, rgba(36, 43, 37, 0.98), rgba(10, 13, 11, 0.98)); transform: translateY(-2px); }
+.overview-explore button:focus-visible { outline: 1px solid #c2a46c; outline-offset: 4px; }
+.overview-explore button b { font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; }
+.overview-explore button i { color: #b59a68; font-size: 1.1rem; font-style: normal; }
+
+.overview-completion-overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; overflow-y: auto; background: rgba(0, 0, 0, 0.88); padding: 1rem; backdrop-filter: blur(12px); }
+.overview-completion { width: min(100%, 42rem); border: 1px solid rgba(181, 154, 104, 0.27); background: radial-gradient(circle at 50% 0, rgba(44, 57, 47, 0.35), transparent 50%), #070908; box-shadow: 0 2rem 7rem #000; padding: clamp(2rem, 5vw, 4.5rem); text-align: center; }
+.overview-completion-emblem { position: relative; width: 7rem; height: 7rem; margin: 0 auto 1.3rem; }
+.overview-completion > p { max-width: 31rem; margin: 1.2rem auto 0; color: #858983; font-family: "Iowan Old Style", serif; line-height: 1.6; }
+.overview-completion-actions { display: flex; justify-content: center; gap: 0.7rem; margin-top: 2rem; }
+.overview-completion-actions button { min-height: 3.25rem; border: 1px solid rgba(181, 154, 104, 0.3); background: #0c0f0d; color: #b8b4aa; cursor: pointer; padding: 0 1rem; font-size: 0.58rem; letter-spacing: 0.11em; text-transform: uppercase; }
+.overview-completion-actions button:hover,
+.overview-completion-actions button:focus-visible { border-color: #b59a68; color: #ece7dd; }
+.overview-completion-actions button:focus-visible { outline: 1px solid #b59a68; outline-offset: 3px; }
+
+@keyframes overview-orbit { to { transform: rotate(360deg); } }
+
+@media (max-width: 900px) {
+  .overview-header { flex-direction: column; gap: 0.7rem; }
+  .overview-controls { justify-content: flex-start; }
+  .pillar-system-stage { height: 25rem; }
+  .pillar-node { width: 13rem; }
+  .pillar-detail { grid-template-columns: 8rem 1fr; }
+  .pillar-detail em { grid-column: 2; border-left: 0; padding-left: 0; }
+}
+
+@media (max-width: 640px) {
+  .overview-shell { padding: 1rem 1rem 2.5rem; }
+  .overview-progress { width: 100%; gap: 0.35rem; font-size: 0.47rem; }
+  .overview-progress span { display: flex; flex-direction: column; gap: 0.12rem; }
+  .overview-progress i { font-size: 0.36rem; }
+  .overview-progress em { flex: 1; min-width: 0.5rem; }
+  .overview-controls { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.3rem; }
+  .overview-controls > span { display: none; }
+  .overview-controls button { min-height: 2.75rem; border: 1px solid rgba(181, 154, 104, 0.11); padding: 0.4rem; text-align: left; line-height: 1.3; }
+  .overview-heading { margin-top: 2.2rem; }
+  .overview-heading h1 { font-size: clamp(2.2rem, 11.5vw, 3.2rem); }
+  .overview-heading p { font-size: 0.94rem; }
+  .pillar-system { margin-top: 2.3rem; }
+  .pillar-system-stage { display: grid; height: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; padding-top: 10rem; }
+  .pillar-connections { display: none; }
+  .overview-core { top: 4.4rem; width: 8rem; height: 8rem; }
+  .overview-core-emblem { width: 4rem; height: 4rem; }
+  .overview-core p { font-size: 0.8rem; }
+  .pillar-node { position: relative; inset: auto; width: 100%; min-height: 6rem; grid-template-columns: 2rem 1fr; gap: 0.45rem; padding: 0.7rem; }
+  .pillar-node-index { display: none; }
+  .pillar-node-copy strong { font-size: 1rem; }
+  .pillar-node-copy small { font-size: 0.4rem; line-height: 1.4; }
+  .pillar-detail { min-height: 9rem; grid-template-columns: 1fr; gap: 0.5rem; padding: 1rem 0.5rem; }
+  .pillar-detail > div { grid-template-columns: 1.8rem 1fr; }
+  .pillar-detail em { grid-column: 1; }
+  .overview-narration-zone { min-height: 4rem; align-items: flex-start; text-align: left; }
+  .overview-narration-zone p { max-width: 17rem; }
+  .overview-explore { margin-top: 1.2rem; }
+  .overview-explore button { min-height: 3.75rem; }
+  .overview-completion-actions { flex-direction: column; }
+  .overview-completion-actions button { width: 100%; }
+}
+
 @media (max-height: 720px) and (max-width: 767px) {
   .gac-hero-emblem-portal {
     width: min(52vw, 12.5rem);

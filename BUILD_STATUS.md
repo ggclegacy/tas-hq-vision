@@ -25,30 +25,48 @@ Last updated: July 13, 2026
 - Connected intelligence pathway between employee and patient systems
 - Shared Onyx narration, live captions, full transcript, replay, and mute controls
 - Keyboard-responsive platform value previews
-- Temporary TAS HQ Introduction destination with gateway return action
+- Continuous TAS HQ entry into the approved Vision Overview chapter
 - Focused Apothecary Compass concept preview with four approved capabilities
 - Temporary Compass emblem isolated in `components/gateway/CompassEmblem.tsx`
 - Desktop, tablet, and stacked mobile presentation behavior
 - Reduced-motion and screen-reader support
 
+### 03 — TAS HQ Vision Overview
+
+- TAS HQ established as an AI-powered employee operating system—not a standalone employee app
+- Four connected interactive pillars: Service, Standard, Collective, and Growth
+- Precision-ring intelligence composition with official TAS HQ emblem and Apothecary green accents
+- Keyboard, pointer, and narration-led pillar selection with focused value statements
+- Reusable Onyx Chapter 03 narration with synchronized captions, replay, mute, audio-independent continuation, and transcript
+- Three-chapter progress context and return path to the Executive Vision Gateway
+- Premium `Explore TAS HQ` completion moment that stops at the Chapter 04 boundary
+- Responsive desktop and mobile presentation with reduced-motion and screen-reader support
+
 ## Validation
 
 - ESLint: passing
 - Strict TypeScript: passing
-- Playwright end-to-end suite: 6 passing scenarios
+- Playwright end-to-end suite: 9 passing scenarios
   - Desktop access hierarchy, official-asset usage, brightness, and sound toggle
   - Gold handoff, complete TAS ownership, and narration-led progression
   - Narrow-mobile typography, emblem sizing, touch targets, reduced motion, and overflow protection
   - Opening-to-gateway transition and destination interactions
+  - Gateway-to-overview transition and Chapter 03 return path
+  - Four-pillar keyboard interaction and approved completion boundary
+  - Overview narration replay, transcript, and shared audio controls
   - Narration controls, transcript, and return path
-  - Mobile stacking and horizontal-overflow protection
+  - Mobile gateway stacking and horizontal-overflow protection
+  - Mobile overview readability, touch targets, and horizontal-overflow protection
 - Production build: passing
 
-## Remaining / Future Build Sections
+## Remaining / Future Build Chapters
 
-- Section 03: TAS HQ Introduction and product experience
+- Chapter 04: Daily Headquarters
+- Chapter 05: Meet Onyx
+- Chapter 06: The Apothecary Standard
+- Chapter 07: Knowledge & Intelligence
 - Apothecary Compass full product experience
 - Replace the temporary Compass emblem when the final approved asset is supplied
 - Add the production `ELEVENLABS_API_KEY` in Vercel environment settings
 
-No Section 03 product functionality is included in the current build.
+No Chapter 04 dashboard or later-chapter functionality is included in the current build.

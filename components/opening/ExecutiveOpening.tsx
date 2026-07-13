@@ -10,8 +10,9 @@ import { TasExecutiveIntro } from "./TasExecutiveIntro";
 import { useExecutiveAudio } from "./useExecutiveAudio";
 import { ExecutiveVisionGateway } from "@/components/gateway/ExecutiveVisionGateway";
 import { GatewayTransition } from "@/components/gateway/GatewayTransition";
+import { ExecutiveVisionOverview } from "@/components/vision-overview/ExecutiveVisionOverview";
 
-type OpeningStage = "access" | "handoff" | "tas-intro" | "gateway-transition" | "gateway";
+type OpeningStage = "access" | "handoff" | "tas-intro" | "gateway-transition" | "gateway" | "vision-overview";
 
 export function ExecutiveOpening() {
   const [stage, setStage] = useState<OpeningStage>("access");
@@ -21,6 +22,7 @@ export function ExecutiveOpening() {
   const [tasCopyVisible, setTasCopyVisible] = useState(false);
   const [caption, setCaption] = useState("");
   const [muted, setMutedState] = useState(false);
+  const [gatewayVisited, setGatewayVisited] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const { startAmbient, playNarration, stopNarration, setMuted } = useExecutiveAudio();
 
@@ -119,6 +121,16 @@ export function ExecutiveOpening() {
     setStage("tas-intro");
   }, []);
 
+  const enterVisionOverview = useCallback(() => {
+    setGatewayVisited(true);
+    setStage("vision-overview");
+  }, []);
+
+  const returnToGateway = useCallback(() => {
+    stopNarration();
+    setStage("gateway");
+  }, [stopNarration]);
+
   const tasIntroComplete = narrationFinished && tasCopyVisible;
 
   return (
@@ -159,6 +171,18 @@ export function ExecutiveOpening() {
               stopNarration={stopNarration}
               onSetMuted={setAudioMuted}
               onReturnIntroduction={returnToIntroduction}
+              onBeginTas={enterVisionOverview}
+              autoNarrate={!gatewayVisited}
+            />
+          )}
+          {stage === "vision-overview" && (
+            <ExecutiveVisionOverview
+              key="vision-overview"
+              muted={muted}
+              playNarration={playNarration}
+              stopNarration={stopNarration}
+              onSetMuted={setAudioMuted}
+              onReturnGateway={returnToGateway}
             />
           )}
         </AnimatePresence>

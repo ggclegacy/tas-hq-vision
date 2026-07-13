@@ -38,6 +38,12 @@ async function openGateway(page: Page) {
   await expect(page.getByRole("article", { name: /TAS HQ/i })).toBeVisible();
 }
 
+async function openOverview(page: Page) {
+  await openGateway(page);
+  await page.getByRole("button", { name: "Begin with TAS HQ" }).click();
+  await expect(page.getByLabel("TAS HQ vision overview")).toBeVisible({ timeout: 8_000 });
+}
+
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/narration", async (route) => {
     await route.fulfill({ status: 200, contentType: "audio/wav", body: silentWav() });
@@ -129,7 +135,7 @@ test("mobile access portal is intentional, readable, and touch sized", async ({ 
   expect(await outerRing.evaluate((element) => getComputedStyle(element).animationIterationCount)).toBe("1");
 });
 
-test("opening transitions continuously into the interactive gateway", async ({ page }) => {
+test("opening transitions continuously through the gateway into the vision overview", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openGateway(page);
 
@@ -154,9 +160,57 @@ test("opening transitions continuously into the interactive gateway", async ({ p
   const tasAction = page.getByRole("button", { name: "Begin with TAS HQ" });
   await tasAction.focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByText("Coming in the next build section")).toBeVisible();
-  await page.getByRole("button", { name: "Back to Vision Gateway" }).click();
+  await expect(page.getByLabel("TAS HQ vision overview")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "More Than an Employee App" })).toBeVisible();
+  await page.getByRole("button", { name: "Return to Vision Gateway" }).click();
   await expect(tasAction).toBeVisible();
+});
+
+test("vision overview presents four connected, keyboard-operable pillars", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openOverview(page);
+
+  const pillarRegion = page.getByLabel("Four pillars of TAS HQ");
+  await expect(pillarRegion.getByRole("button", { name: "Service, Patient Experience" })).toBeVisible();
+  await expect(pillarRegion.getByRole("button", { name: "Standard, Shared Excellence" })).toBeVisible();
+  await expect(pillarRegion.getByRole("button", { name: "Collective, One Connected Team" })).toBeVisible();
+  await expect(pillarRegion.getByRole("button", { name: "Growth, Continuous Momentum" })).toBeVisible();
+
+  const standard = pillarRegion.getByRole("button", { name: "Standard, Shared Excellence" });
+  await standard.focus();
+  await page.keyboard.press("Enter");
+  await expect(standard).toHaveAttribute("aria-pressed", "true");
+  await expect(pillarRegion.getByText("The standard travels with every shift.")).toBeVisible();
+
+  const explore = page.getByRole("button", { name: "Explore TAS HQ" });
+  await explore.click();
+  const completion = page.getByRole("dialog", { name: "The Vision Is Connected" });
+  await expect(completion).toBeVisible();
+  await expect(completion.getByText(/ready for the next approved build chapter/i)).toBeVisible();
+  await expect(completion.getByText(/Daily Brief|Leadership Message|Team Wins/i)).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(completion).toBeHidden();
+});
+
+test("overview narration replay, transcript, and return controls remain reusable", async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 820 });
+  let narrationRequests = 0;
+  await page.unroute("**/api/narration");
+  await page.route("**/api/narration", async (route) => {
+    narrationRequests += 1;
+    await route.fulfill({ status: 200, contentType: "audio/wav", body: silentWav() });
+  });
+  await openOverview(page);
+
+  await expect.poll(() => narrationRequests).toBeGreaterThanOrEqual(3);
+  const beforeReplay = narrationRequests;
+  await page.getByRole("button", { name: "Replay Narration" }).click();
+  await expect.poll(() => narrationRequests).toBeGreaterThan(beforeReplay);
+  await page.getByRole("button", { name: "Transcript" }).click();
+  await expect(page.getByLabel("Onyx narration transcript")).toContainText("four connected pillars");
+
+  await page.getByRole("button", { name: "Return to Vision Gateway" }).click();
+  await expect(page.getByRole("button", { name: "Begin with TAS HQ" })).toBeVisible();
 });
 
 test("narration controls and return path remain operable", async ({ page }) => {
@@ -200,4 +254,19 @@ test("mobile layout stacks platforms without horizontal overflow", async ({ page
   expect(compassBox!.y).toBeGreaterThan(tasBox!.y + tasBox!.height);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await expect(page.getByRole("button", { name: "Replay Narration" })).toBeVisible();
+});
+
+test("mobile vision overview remains readable, touch sized, and overflow safe", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openOverview(page);
+
+  const growth = page.getByRole("button", { name: "Growth, Continuous Momentum" });
+  await growth.scrollIntoViewIfNeeded();
+  await expect(growth).toBeVisible();
+  expect((await growth.boundingBox())!.height).toBeGreaterThanOrEqual(52);
+
+  const explore = page.getByRole("button", { name: "Explore TAS HQ" });
+  await explore.scrollIntoViewIfNeeded();
+  expect((await explore.boundingBox())!.height).toBeGreaterThanOrEqual(52);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });

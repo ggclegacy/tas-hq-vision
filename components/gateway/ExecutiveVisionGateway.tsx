@@ -10,7 +10,6 @@ import { NarrationControls } from "./NarrationControls";
 import { PlatformConnection } from "./PlatformConnection";
 import { PlatformPortal } from "./PlatformPortal";
 import { SectionProgress } from "./SectionProgress";
-import { TasPlaceholder } from "./TasPlaceholder";
 import { PLATFORMS, type PlatformId } from "./gateway-content";
 
 type ExecutiveVisionGatewayProps = {
@@ -19,6 +18,8 @@ type ExecutiveVisionGatewayProps = {
   stopNarration: () => void;
   onSetMuted: (muted: boolean) => void;
   onReturnIntroduction: () => void;
+  onBeginTas: () => void;
+  autoNarrate?: boolean;
 };
 
 export function ExecutiveVisionGateway({
@@ -27,19 +28,21 @@ export function ExecutiveVisionGateway({
   stopNarration,
   onSetMuted,
   onReturnIntroduction,
+  onBeginTas,
+  autoNarrate = true,
 }: ExecutiveVisionGatewayProps) {
   const [activePlatform, setActivePlatform] = useState<PlatformId>("tas");
   const [playbackId, setPlaybackId] = useState<number | null>(null);
   const [caption, setCaption] = useState("");
   const [transcriptVisible, setTranscriptVisible] = useState(false);
   const [compassPreviewOpen, setCompassPreviewOpen] = useState(false);
-  const [tasPlaceholderOpen, setTasPlaceholderOpen] = useState(false);
   const priorFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
+    if (!autoNarrate) return;
     const timer = window.setTimeout(() => setPlaybackId(1), 1350);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [autoNarrate]);
 
   const narrationComplete = useCallback(() => setPlaybackId(null), []);
 
@@ -75,12 +78,12 @@ export function ExecutiveVisionGateway({
     window.setTimeout(() => priorFocusRef.current?.focus(), 0);
   }, []);
 
-  const openTasPlaceholder = useCallback(() => {
+  const beginTas = useCallback(() => {
     stopNarration();
     setPlaybackId(null);
     setActivePlatform("tas");
-    setTasPlaceholderOpen(true);
-  }, [stopNarration]);
+    onBeginTas();
+  }, [onBeginTas, stopNarration]);
 
   return (
     <GatewayEnvironment>
@@ -114,7 +117,7 @@ export function ExecutiveVisionGateway({
             platform={PLATFORMS.tas}
             active={activePlatform === "tas"}
             onActivate={() => setActivePlatform("tas")}
-            onAction={openTasPlaceholder}
+            onAction={beginTas}
           />
           <PlatformPortal
             platform={PLATFORMS.compass}
@@ -168,7 +171,6 @@ export function ExecutiveVisionGateway({
 
       <AnimatePresence>
         {compassPreviewOpen && <CompassPreview key="compass-preview" onClose={closeCompassPreview} />}
-        {tasPlaceholderOpen && <TasPlaceholder key="tas-placeholder" onBack={() => setTasPlaceholderOpen(false)} />}
       </AnimatePresence>
     </GatewayEnvironment>
   );

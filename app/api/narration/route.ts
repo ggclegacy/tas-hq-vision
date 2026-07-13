@@ -13,7 +13,9 @@ export async function POST(request: Request) {
 
   try {
     const body = (await request.json()) as { experience?: string };
-    if (body.experience === "gateway") narrationId = "gateway";
+    if (body.experience === "gateway" || body.experience === "overview") {
+      narrationId = body.experience;
+    }
   } catch {
     // Requests without a body remain compatible with the original opening.
   }
