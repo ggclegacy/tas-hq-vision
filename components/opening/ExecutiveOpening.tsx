@@ -4,11 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion, MotionConfig, useReducedMotion } from "motion/react";
 import { GacIntro } from "./GacIntro";
 import { Narration } from "./Narration";
+import { OPENING_NARRATION } from "./narration-script";
 import { TasReveal } from "./TasReveal";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { useExecutiveAudio } from "./useExecutiveAudio";
+import { ExecutiveVisionGateway } from "@/components/gateway/ExecutiveVisionGateway";
+import { GatewayTransition } from "@/components/gateway/GatewayTransition";
 
-type OpeningStage = "consent" | "black" | "identity" | "power" | "welcome";
+type OpeningStage = "consent" | "black" | "identity" | "power" | "welcome" | "gateway-transition" | "gateway";
 
 function BlackFrame({ consent, onBegin }: { consent: boolean; onBegin: () => void }) {
   return (
@@ -83,6 +86,12 @@ export function ExecutiveOpening() {
     return () => window.clearTimeout(timer);
   }, [prefersReducedMotion, stage]);
 
+  useEffect(() => {
+    if (stage !== "gateway-transition") return;
+    const timer = window.setTimeout(() => setStage("gateway"), prefersReducedMotion ? 500 : 1900);
+    return () => window.clearTimeout(timer);
+  }, [prefersReducedMotion, stage]);
+
   const completeNarration = useCallback(() => {
     setNarrationActive(false);
     setCaption("");
@@ -106,14 +115,25 @@ export function ExecutiveOpening() {
     setMutedState(true);
   }, [setMuted]);
 
+  const setAudioMuted = useCallback((nextMuted: boolean) => {
+    setMuted(nextMuted);
+    setMutedState(nextMuted);
+  }, [setMuted]);
+
   const enterExperience = useCallback(() => {
     setEntered(true);
+    setStage("gateway-transition");
     window.dispatchEvent(new CustomEvent("tas:enter-experience"));
+  }, []);
+
+  const returnToIntroduction = useCallback(() => {
+    setEntered(false);
+    setStage("welcome");
   }, []);
 
   return (
     <MotionConfig reducedMotion="user">
-      <main className="relative min-h-[100svh] overflow-hidden bg-black text-stone-100" aria-label="TAS HQ executive opening">
+      <main className="relative min-h-[100svh] overflow-hidden bg-black text-stone-100" aria-label="TAS HQ executive vision experience">
         <AnimatePresence mode="wait">
           {stage === "consent" && <BlackFrame key="consent" consent onBegin={begin} />}
           {stage === "black" && <BlackFrame key="black" consent={false} onBegin={begin} />}
@@ -129,10 +149,22 @@ export function ExecutiveOpening() {
               onReplay={replay}
             />
           )}
+          {stage === "gateway-transition" && <GatewayTransition key="gateway-transition" />}
+          {stage === "gateway" && (
+            <ExecutiveVisionGateway
+              key="gateway"
+              muted={muted}
+              playNarration={playNarration}
+              stopNarration={stopNarration}
+              onSetMuted={setAudioMuted}
+              onReturnIntroduction={returnToIntroduction}
+            />
+          )}
         </AnimatePresence>
 
         <Narration
-          active={narrationActive}
+          playbackId={narrationActive ? 1 : null}
+          script={OPENING_NARRATION}
           play={playNarration}
           stop={stopNarration}
           onCaption={setCaption}

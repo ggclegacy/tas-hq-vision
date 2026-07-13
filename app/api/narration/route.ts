@@ -1,11 +1,24 @@
 import { NextResponse } from "next/server";
-import { NARRATION_TEXT } from "@/components/opening/narration-script";
+import {
+  NARRATION_SCRIPTS,
+  type NarrationId,
+} from "@/components/opening/narration-script";
 
 export const runtime = "nodejs";
 
-export async function POST() {
+export async function POST(request: Request) {
   const apiKey = process.env.ELEVENLABS_API_KEY;
   const voiceId = process.env.ELEVENLABS_VOICE_ID ?? "5os40wnynMhpbBkIvStO";
+  let narrationId: NarrationId = "opening";
+
+  try {
+    const body = (await request.json()) as { experience?: string };
+    if (body.experience === "gateway") narrationId = "gateway";
+  } catch {
+    // Requests without a body remain compatible with the original opening.
+  }
+
+  const narration = NARRATION_SCRIPTS[narrationId];
 
   // A 204 tells the client to use its local speech fallback during development.
   if (!apiKey) {
@@ -22,7 +35,7 @@ export async function POST() {
         "xi-api-key": apiKey,
       },
       body: JSON.stringify({
-        text: NARRATION_TEXT,
+        text: narration.text,
         model_id: "eleven_multilingual_v2",
         voice_settings: {
           stability: 0.7,

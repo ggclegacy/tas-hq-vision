@@ -1,11 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import {
-  NARRATION_CUES,
-  NARRATION_LINES,
-  NOMINAL_NARRATION_DURATION,
-} from "./narration-script";
+import type { NarrationScript } from "./narration-script";
 
 type CaptionSetter = (caption: string) => void;
 
@@ -20,6 +16,7 @@ export function useExecutiveAudio() {
   const narrationSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const captionTimersRef = useRef<number[]>([]);
   const runRef = useRef(0);
+  const mutedRef = useRef(false);
 
   const ensureContext = useCallback(async () => {
     if (!contextRef.current) {
@@ -72,14 +69,18 @@ export function useExecutiveAudio() {
     runRef.current += 1;
     captionTimersRef.current.forEach(window.clearTimeout);
     captionTimersRef.current = [];
-    narrationSourceRef.current?.stop();
+    try {
+      narrationSourceRef.current?.stop();
+    } catch {
+      // An already-ended Web Audio source does not need additional cleanup.
+    }
     narrationSourceRef.current = null;
     window.speechSynthesis?.cancel();
   }, []);
 
-  const narrateWithBrowserVoice = useCallback(async (setCaption: CaptionSetter, run: number) => {
+  const narrateWithBrowserVoice = useCallback(async (script: NarrationScript, setCaption: CaptionSetter, run: number) => {
     if (!("speechSynthesis" in window)) {
-      for (const line of NARRATION_LINES) {
+      for (const line of script.lines) {
         if (runRef.current !== run) return;
         setCaption(line);
         await wait(line.includes("Granted") ? 1700 : 2400);
@@ -92,34 +93,38 @@ export function useExecutiveAudio() {
       (voice) => voice.lang.startsWith("en") && /Daniel|Alex|Arthur|Google UK English Male/i.test(voice.name),
     );
 
-    for (let index = 0; index < NARRATION_LINES.length; index += 1) {
+    for (let index = 0; index < script.lines.length; index += 1) {
       if (runRef.current !== run) return;
-      const line = NARRATION_LINES[index];
+      const line = script.lines[index];
       setCaption(line);
       await new Promise<void>((resolve) => {
         const utterance = new SpeechSynthesisUtterance(line.replaceAll("…", ""));
         utterance.voice = preferredVoice ?? null;
         utterance.rate = 0.82;
         utterance.pitch = 0.72;
-        utterance.volume = 0.82;
+        utterance.volume = mutedRef.current ? 0 : 0.82;
         utterance.onend = () => resolve();
         utterance.onerror = () => resolve();
         window.speechSynthesis.speak(utterance);
       });
-      await wait(index === 0 || index === 2 || index === 5 ? 720 : 280);
+      await wait(script.longPausesAfter.includes(index) ? 720 : 280);
     }
   }, []);
 
   const playNarration = useCallback(
-    async (setCaption: CaptionSetter) => {
+    async (script: NarrationScript, setCaption: CaptionSetter) => {
       stopNarration();
       const run = runRef.current;
       const context = await ensureContext();
 
       try {
-        const response = await fetch("/api/narration", { method: "POST" });
+        const response = await fetch("/api/narration", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ experience: script.id }),
+        });
         if (!response.ok || response.status === 204 || !masterRef.current) {
-          await narrateWithBrowserVoice(setCaption, run);
+          await narrateWithBrowserVoice(script, setCaption, run);
           return;
         }
 
@@ -133,10 +138,10 @@ export function useExecutiveAudio() {
         source.connect(narrationGain).connect(masterRef.current);
         narrationSourceRef.current = source;
 
-        const scale = audioBuffer.duration / NOMINAL_NARRATION_DURATION;
-        NARRATION_CUES.forEach((cue, index) => {
+        const scale = audioBuffer.duration / script.nominalDuration;
+        script.cues.forEach((cue, index) => {
           const timer = window.setTimeout(() => {
-            if (runRef.current === run) setCaption(NARRATION_LINES[index]);
+            if (runRef.current === run) setCaption(script.lines[index]);
           }, cue * scale * 1000);
           captionTimersRef.current.push(timer);
         });
@@ -146,13 +151,14 @@ export function useExecutiveAudio() {
           source.start();
         });
       } catch {
-        if (runRef.current === run) await narrateWithBrowserVoice(setCaption, run);
+        if (runRef.current === run) await narrateWithBrowserVoice(script, setCaption, run);
       }
     },
     [ensureContext, narrateWithBrowserVoice, stopNarration],
   );
 
   const setMuted = useCallback((muted: boolean) => {
+    mutedRef.current = muted;
     const context = contextRef.current;
     const master = masterRef.current;
     if (!context || !master) return;

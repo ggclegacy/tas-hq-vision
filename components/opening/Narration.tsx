@@ -1,21 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
+import type { NarrationScript } from "./narration-script";
 
 type NarrationProps = {
-  active: boolean;
-  play: (setCaption: (caption: string) => void) => Promise<void>;
+  playbackId: number | null;
+  script: NarrationScript;
+  play: (script: NarrationScript, setCaption: (caption: string) => void) => Promise<void>;
   stop: () => void;
   onCaption: (caption: string) => void;
   onComplete: () => void;
 };
 
-export function Narration({ active, play, stop, onCaption, onComplete }: NarrationProps) {
+export function Narration({ playbackId, script, play, stop, onCaption, onComplete }: NarrationProps) {
   useEffect(() => {
-    if (!active) return;
+    if (playbackId === null) return;
     let cancelled = false;
 
-    void play(onCaption).then(() => {
+    void play(script, onCaption).then(() => {
       if (!cancelled) onComplete();
     });
 
@@ -23,7 +25,7 @@ export function Narration({ active, play, stop, onCaption, onComplete }: Narrati
       cancelled = true;
       stop();
     };
-  }, [active, onCaption, onComplete, play, stop]);
+  }, [onCaption, onComplete, play, playbackId, script, stop]);
 
   return null;
 }
