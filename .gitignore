@@ -23,6 +23,7 @@ next-env.d.ts
 # Original source drops are preserved locally; runtime copies live in /public.
 /gac-logo.png
 /tas-hq-icon.png
+/gac-icon.png
 
 # browser test output
 /test-results/

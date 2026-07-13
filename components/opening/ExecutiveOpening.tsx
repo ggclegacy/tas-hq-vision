@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { AnimatePresence, motion, MotionConfig, useReducedMotion } from "motion/react";
+import { AnimatePresence, MotionConfig, useReducedMotion } from "motion/react";
+import { ExecutiveAccessPortal } from "./ExecutiveAccessPortal";
 import { GacIntro } from "./GacIntro";
 import { Narration } from "./Narration";
 import { OPENING_NARRATION } from "./narration-script";
@@ -11,41 +12,11 @@ import { useExecutiveAudio } from "./useExecutiveAudio";
 import { ExecutiveVisionGateway } from "@/components/gateway/ExecutiveVisionGateway";
 import { GatewayTransition } from "@/components/gateway/GatewayTransition";
 
-type OpeningStage = "consent" | "black" | "identity" | "power" | "welcome" | "gateway-transition" | "gateway";
-
-function BlackFrame({ consent, onBegin }: { consent: boolean; onBegin: () => void }) {
-  return (
-    <motion.section
-      className="absolute inset-0 flex min-h-[100svh] items-center justify-center bg-black"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-    >
-      {consent ? (
-        <motion.button
-          type="button"
-          onClick={onBegin}
-          className="audio-gate group"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.55, duration: 1.2 }}
-        >
-          <span className="audio-gate-line" aria-hidden="true" />
-          <span>Begin Executive Preview</span>
-          <span className="text-[0.52rem] tracking-[0.26em] text-stone-600 group-hover:text-stone-400">
-            Sound enabled
-          </span>
-        </motion.button>
-      ) : (
-        <span className="sr-only">Executive preview loading</span>
-      )}
-    </motion.section>
-  );
-}
+type OpeningStage = "access" | "identity" | "power" | "welcome" | "gateway-transition" | "gateway";
 
 export function ExecutiveOpening() {
-  const [stage, setStage] = useState<OpeningStage>("consent");
+  const [stage, setStage] = useState<OpeningStage>("access");
+  const [accessConfirmed, setAccessConfirmed] = useState(false);
   const [showPresents, setShowPresents] = useState(false);
   const [narrationActive, setNarrationActive] = useState(false);
   const [caption, setCaption] = useState("");
@@ -54,21 +25,21 @@ export function ExecutiveOpening() {
   const prefersReducedMotion = useReducedMotion();
   const { startAmbient, playNarration, stopNarration, setMuted } = useExecutiveAudio();
 
-  const begin = useCallback(() => {
+  const begin = useCallback((silent = muted) => {
     void startAmbient();
-    setMuted(false);
-    setMutedState(false);
+    setMuted(silent);
+    setMutedState(silent);
     setShowPresents(false);
     setNarrationActive(false);
     setCaption("");
-    setStage("black");
-  }, [setMuted, startAmbient]);
+    setAccessConfirmed(true);
+  }, [muted, setMuted, startAmbient]);
 
   useEffect(() => {
-    if (stage !== "black") return;
-    const timer = window.setTimeout(() => setStage("identity"), prefersReducedMotion ? 350 : 1100);
+    if (stage !== "access" || !accessConfirmed) return;
+    const timer = window.setTimeout(() => setStage("identity"), prefersReducedMotion ? 260 : 850);
     return () => window.clearTimeout(timer);
-  }, [prefersReducedMotion, stage]);
+  }, [accessConfirmed, prefersReducedMotion, stage]);
 
   useEffect(() => {
     if (stage !== "identity") return;
@@ -107,13 +78,23 @@ export function ExecutiveOpening() {
     setShowPresents(false);
     setNarrationActive(false);
     setCaption("");
-    setStage("black");
+    setAccessConfirmed(false);
+    setStage("identity");
   }, [setMuted, startAmbient, stopNarration]);
+
+  const beginSilent = useCallback(() => begin(true), [begin]);
 
   const continueSilent = useCallback(() => {
     setMuted(true);
     setMutedState(true);
   }, [setMuted]);
+
+  const toggleAccessSound = useCallback(() => {
+    const nextMuted = !muted;
+    if (!nextMuted) void startAmbient();
+    setMuted(nextMuted);
+    setMutedState(nextMuted);
+  }, [muted, setMuted, startAmbient]);
 
   const setAudioMuted = useCallback((nextMuted: boolean) => {
     setMuted(nextMuted);
@@ -135,8 +116,17 @@ export function ExecutiveOpening() {
     <MotionConfig reducedMotion="user">
       <main className="relative min-h-[100svh] overflow-hidden bg-black text-stone-100" aria-label="TAS HQ executive vision experience">
         <AnimatePresence mode="wait">
-          {stage === "consent" && <BlackFrame key="consent" consent onBegin={begin} />}
-          {stage === "black" && <BlackFrame key="black" consent={false} onBegin={begin} />}
+          {stage === "access" && (
+            <ExecutiveAccessPortal
+              key="access"
+              muted={muted}
+              confirmed={accessConfirmed}
+              onBegin={() => begin()}
+              onToggleSound={toggleAccessSound}
+              onContinueSilent={beginSilent}
+              onReplay={() => begin()}
+            />
+          )}
           {stage === "identity" && <GacIntro key="identity" showPresents={showPresents} caption={caption} />}
           {stage === "power" && <TasReveal key="power" />}
           {stage === "welcome" && (

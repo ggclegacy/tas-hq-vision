@@ -43,6 +43,73 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test("executive access portal presents a bright, explicit desktop entry", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  const portal = page.getByLabel("Private executive access portal");
+  const emblem = page.getByRole("img", { name: "Gent Ascend Collective emblem" });
+  const primaryAction = page.getByRole("button", { name: "Begin Executive Preview with sound" });
+  await expect(portal).toBeVisible();
+  await expect(emblem).toBeVisible();
+  await expect(emblem).toHaveAttribute("src", /gac-icon/);
+  await expect(page.locator('img[src*="gac-logo"]')).toHaveCount(0);
+  await expect(page.getByText("Blair", { exact: true })).toBeVisible();
+  await expect(page.getByText(/private preview of the future/i)).toBeVisible();
+  await expect(primaryAction).toBeVisible();
+  expect((await primaryAction.boundingBox())!.height).toBeGreaterThanOrEqual(52);
+
+  const imageTreatment = await emblem.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { opacity: style.opacity, filter: style.filter };
+  });
+  expect(imageTreatment).toEqual({ opacity: "1", filter: "none" });
+
+  const mute = page.getByRole("button", { name: "Mute sound" });
+  await mute.click();
+  await expect(page.getByRole("button", { name: "Turn sound on" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Turn sound on" }).click();
+  await expect(page.getByRole("button", { name: "Mute sound" })).toHaveAttribute("aria-pressed", "false");
+});
+
+test("production intro keeps the official emblem and narration-led flow", async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 820 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Replay Introduction" }).click();
+
+  await expect(page.getByText("Neil Stutes", { exact: true })).toBeVisible({ timeout: 5_000 });
+  await expect(page.getByRole("img", { name: "Gent Ascend Collective emblem" })).toHaveAttribute("src", /gac-icon/);
+  await expect(page.getByText("Creative Systems Architect", { exact: true })).toBeVisible();
+  await expect(page.getByText("Presents", { exact: true })).toBeVisible({ timeout: 5_000 });
+  await expect(page.getByRole("heading", { name: "Welcome Blair" })).toBeVisible({ timeout: 8_000 });
+});
+
+test("mobile access portal is intentional, readable, and touch sized", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const primaryAction = page.getByRole("button", { name: "Begin Executive Preview with sound" });
+  const emblem = page.getByRole("img", { name: "Gent Ascend Collective emblem" });
+  await expect(emblem).toBeVisible();
+  await expect(page.getByText("Blair", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Continue Without Audio" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Replay Introduction" })).toBeVisible();
+
+  const actionBox = await primaryAction.boundingBox();
+  const emblemBox = await emblem.boundingBox();
+  expect(actionBox).not.toBeNull();
+  expect(emblemBox).not.toBeNull();
+  expect(actionBox!.height).toBeGreaterThanOrEqual(52);
+  expect(actionBox!.width).toBeGreaterThanOrEqual(340);
+  expect(emblemBox!.width).toBeGreaterThanOrEqual(220);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  const outerRing = page.locator(".bezel-ring-outer");
+  expect(await outerRing.evaluate((element) => getComputedStyle(element).animationIterationCount)).toBe("1");
+});
+
 test("opening transitions continuously into the interactive gateway", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openGateway(page);

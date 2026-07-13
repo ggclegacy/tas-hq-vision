@@ -6,8 +6,11 @@ Last updated: July 13, 2026
 
 ### 01 — Executive Opening Experience
 
-- Browser-compliant black-screen audio gate and ambient soundscape
-- Gent Ascend Collective identity sequence
+- Full-screen executive access portal designed around the official `gac-icon.png` emblem
+- Bright, responsive GAC hero with opposing precision-gold rings, intelligence nodes, breathing motion, and a restrained light sweep
+- Clear Blair-specific hierarchy, substantial primary CTA, and accessible sound choices
+- Browser-compliant interaction gate and ambient soundscape
+- Rebuilt Gent Ascend Collective production introduction using the official emblem rather than the retired poster composition
 - Reusable Onyx narration with secure ElevenLabs environment configuration
 - TAS HQ emblem power-on transition
 - Blair executive welcome screen
@@ -31,7 +34,10 @@ Last updated: July 13, 2026
 
 - ESLint: passing
 - Strict TypeScript: passing
-- Playwright end-to-end suite: 3 passing scenarios
+- Playwright end-to-end suite: 6 passing scenarios
+  - Desktop access hierarchy, official-asset usage, brightness, and sound toggle
+  - Production-intro identity and narration-led progression
+  - Narrow-mobile typography, emblem sizing, touch targets, reduced motion, and overflow protection
   - Opening-to-gateway transition and destination interactions
   - Narration controls, transcript, and return path
   - Mobile stacking and horizontal-overflow protection
