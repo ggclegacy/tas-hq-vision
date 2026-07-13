@@ -1,0 +1,268 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #020202;
+  --ivory: #f0ede6;
+  --muted: #8d8981;
+  --brass: #b59a68;
+  --brass-deep: #59472c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #000;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #000;
+  color: var(--ivory);
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+button {
+  font: inherit;
+}
+
+.font-display {
+  font-family: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
+  font-weight: 400;
+}
+
+.tracking-luxury {
+  letter-spacing: 0.075em;
+}
+
+.opening-vignette {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(83, 67, 39, 0.12), transparent 34%),
+    radial-gradient(ellipse at 50% 100%, rgba(50, 42, 29, 0.09), transparent 45%),
+    #020202;
+}
+
+.opening-vignette::after,
+.welcome-field::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  box-shadow: inset 0 0 16vw 5vw #000;
+}
+
+.grain {
+  position: absolute;
+  inset: -50%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image:
+    repeating-radial-gradient(circle at 17% 31%, transparent 0, rgba(255, 255, 255, 0.3) 0.7px, transparent 1px, transparent 4px),
+    repeating-radial-gradient(circle at 71% 63%, transparent 0, rgba(255, 255, 255, 0.2) 0.6px, transparent 1px, transparent 5px);
+  transform: rotate(8deg);
+}
+
+.gac-art {
+  animation: gac-breathe 8s ease-in-out infinite alternate;
+  filter: saturate(0.73) contrast(1.06) brightness(0.86);
+}
+
+.gac-art::after {
+  position: absolute;
+  inset: 4% 2%;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, rgba(236, 211, 163, 0.08) 49%, transparent 63%);
+  mix-blend-mode: screen;
+  animation: gac-light 7s ease-in-out infinite;
+}
+
+.icon-power-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(78vw, 35rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(178, 148, 91, 0.08);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(142, 112, 60, 0.09), transparent 59%);
+  transform: translate(-50%, -50%);
+  animation: ring-awaken 4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tas-emblem {
+  filter: drop-shadow(0 28px 44px rgba(0, 0, 0, 0.8));
+}
+
+.metal-sweep {
+  position: absolute;
+  inset: 0;
+  width: 42%;
+  background: linear-gradient(90deg, transparent, rgba(255, 240, 207, 0.72), transparent);
+  filter: blur(10px);
+  mix-blend-mode: screen;
+  -webkit-mask: center / contain no-repeat url("/tas-hq-icon.png");
+  mask: center / contain no-repeat url("/tas-hq-icon.png");
+}
+
+.welcome-field {
+  background:
+    radial-gradient(circle at 50% 24%, rgba(96, 80, 48, 0.14), transparent 25%),
+    linear-gradient(180deg, #030403 0%, #050604 52%, #020202 100%);
+}
+
+.architectural-lines {
+  position: absolute;
+  inset: 0;
+  opacity: 0.28;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(161, 134, 84, 0.12) 50%, transparent calc(50% + 1px)),
+    linear-gradient(165deg, transparent 49.9%, rgba(161, 134, 84, 0.07) 50%, transparent 50.1%),
+    linear-gradient(15deg, transparent 49.9%, rgba(161, 134, 84, 0.07) 50%, transparent 50.1%);
+  mask-image: linear-gradient(to bottom, black, transparent 74%);
+}
+
+.welcome-title {
+  text-transform: uppercase;
+  text-shadow: 0 1px 18px rgba(235, 217, 180, 0.08);
+}
+
+.audio-gate {
+  display: flex;
+  min-width: 15rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  border: 0;
+  background: transparent;
+  color: #a8a49d;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  cursor: pointer;
+  transition: color 500ms ease;
+}
+
+.audio-gate:hover {
+  color: #f0ede6;
+}
+
+.audio-gate-line {
+  width: 2.75rem;
+  height: 1px;
+  margin-bottom: 0.25rem;
+  background: #6e5a37;
+  transform: scaleX(0.7);
+  transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1), background-color 400ms ease;
+}
+
+.audio-gate:hover .audio-gate-line {
+  width: 5rem;
+  background: #b59a68;
+}
+
+.audio-gate:focus-visible,
+.executive-button:focus-visible {
+  outline: 1px solid #c1a46c;
+  outline-offset: 4px;
+}
+
+.executive-button {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 1px solid rgba(165, 144, 105, 0.2);
+  background: rgba(255, 255, 255, 0.012);
+  padding: 0.86rem 1rem;
+  color: #908d86;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  cursor: pointer;
+  transition:
+    border-color 450ms ease,
+    background-color 450ms ease,
+    color 450ms ease,
+    transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.executive-button::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(110deg, transparent, rgba(205, 181, 132, 0.06), transparent);
+  transform: translateX(-120%);
+  transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.executive-button:hover {
+  border-color: rgba(190, 160, 104, 0.48);
+  background: rgba(190, 160, 104, 0.025);
+  color: #e7e2d8;
+  transform: translateY(-1px);
+}
+
+.executive-button:hover::before {
+  transform: translateX(120%);
+}
+
+.executive-button-primary {
+  border-color: rgba(190, 160, 104, 0.54);
+  background: rgba(190, 160, 104, 0.055);
+  color: #eee9df;
+}
+
+.button-mark {
+  width: 0.35rem;
+  height: 0.35rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+@keyframes gac-breathe {
+  0% { transform: scale(0.99); filter: saturate(0.7) contrast(1.05) brightness(0.78); }
+  100% { transform: scale(1.012); filter: saturate(0.78) contrast(1.08) brightness(0.9); }
+}
+
+@keyframes gac-light {
+  0%, 18% { transform: translateX(-70%); opacity: 0; }
+  48% { opacity: 1; }
+  82%, 100% { transform: translateX(70%); opacity: 0; }
+}
+
+@keyframes ring-awaken {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.88); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@media (max-height: 760px) {
+  .gac-art {
+    height: 34svh;
+    min-height: 12rem;
+  }
+
+  .welcome-field > div:nth-last-child(1) {
+    transform: scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
