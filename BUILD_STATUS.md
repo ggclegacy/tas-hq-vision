@@ -8,12 +8,13 @@ Last updated: July 13, 2026
 
 - Full-screen executive access portal designed around the official `gac-icon.png` emblem
 - Bright, responsive GAC hero with opposing precision-gold rings, intelligence nodes, breathing motion, and a restrained light sweep
-- Clear Blair-specific hierarchy, substantial primary CTA, and accessible sound choices
+- Partnership-focused Blair Vidrine hierarchy, substantial primary CTA, and accessible sound choices
 - Browser-compliant interaction gate and ambient soundscape
-- Rebuilt Gent Ascend Collective production introduction using the official emblem rather than the retired poster composition
+- Single-screen Gent Ascend production identity with understated Neil Stutes credit
+- Near-black precision-gold story handoff with no repeated GAC branding
+- Blair-focused TAS HQ reveal with precision-machined emblem lighting and Apothecary green activation
+- Unified TAS HQ introduction, supporting vision copy, narration captions, and gateway entry controls
 - Reusable Onyx narration with secure ElevenLabs environment configuration
-- TAS HQ emblem power-on transition
-- Blair executive welcome screen
 - Replay and audio-independent controls
 
 ### 02 — Executive Vision Gateway
@@ -36,7 +37,7 @@ Last updated: July 13, 2026
 - Strict TypeScript: passing
 - Playwright end-to-end suite: 6 passing scenarios
   - Desktop access hierarchy, official-asset usage, brightness, and sound toggle
-  - Production-intro identity and narration-led progression
+  - Gold handoff, complete TAS ownership, and narration-led progression
   - Narrow-mobile typography, emblem sizing, touch targets, reduced motion, and overflow protection
   - Opening-to-gateway transition and destination interactions
   - Narration controls, transcript, and return path

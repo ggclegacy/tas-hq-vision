@@ -18,13 +18,21 @@ export function ExecutiveIntroCopy({ confirmed = false }: { confirmed?: boolean 
       </motion.div>
 
       <motion.div variants={copyLine} className="access-recipient">
-        <p>Presented for</p>
-        <DisplayText as="p" className="access-blair">Blair</DisplayText>
+        <p>Thoughtfully created for</p>
+        <DisplayText as="p" className="access-blair">Blair Vidrine</DisplayText>
+        <p className="access-company">The Apothecary Shoppe</p>
       </motion.div>
 
       <motion.div variants={copyLine} className="access-purpose">
-        <p>A private preview of the future of The Apothecary Shoppe.</p>
-        <p>Built for your people. Elevated by intelligence.</p>
+        <p>A vision created to support your team, your people, and the standard you&apos;ve built.</p>
+      </motion.div>
+
+      <motion.div variants={copyLine} className="access-production-credit">
+        <span>Neil Stutes</span>
+        <i aria-hidden="true" />
+        <span>Founder</span>
+        <i aria-hidden="true" />
+        <span>Creative Systems Architect</span>
       </motion.div>
     </motion.div>
   );

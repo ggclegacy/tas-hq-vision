@@ -25,7 +25,8 @@ async function openGateway(page: Page) {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await page.getByRole("button", { name: /Begin Executive Preview/i }).click();
-  await expect(page.getByRole("heading", { name: "Welcome Blair" })).toBeVisible({ timeout: 8_000 });
+  await expect(page.getByLabel("TAS HQ executive introduction")).toBeVisible({ timeout: 8_000 });
+  await expect(page.getByRole("heading", { name: "TAS HQ", exact: true })).toBeVisible({ timeout: 8_000 });
   const enterExperience = page.getByRole("button", { name: /Enter Experience/i });
   const gatewayProgress = page.getByRole("navigation", { name: "Experience progress" });
   await expect(enterExperience).toBeEnabled();
@@ -54,8 +55,11 @@ test("executive access portal presents a bright, explicit desktop entry", async 
   await expect(emblem).toBeVisible();
   await expect(emblem).toHaveAttribute("src", /gac-icon/);
   await expect(page.locator('img[src*="gac-logo"]')).toHaveCount(0);
-  await expect(page.getByText("Blair", { exact: true })).toBeVisible();
-  await expect(page.getByText(/private preview of the future/i)).toBeVisible();
+  await expect(page.getByText("Blair Vidrine", { exact: true })).toBeVisible();
+  await expect(page.getByText("The Apothecary Shoppe", { exact: true })).toBeVisible();
+  await expect(page.getByText(/vision created to support your team/i)).toBeVisible();
+  await expect(page.getByText("Neil Stutes", { exact: true })).toBeVisible();
+  await expect(page.getByText(/future of The Apothecary Shoppe/i)).toHaveCount(0);
   await expect(primaryAction).toBeVisible();
   expect((await primaryAction.boundingBox())!.height).toBeGreaterThanOrEqual(52);
 
@@ -72,17 +76,32 @@ test("executive access portal presents a bright, explicit desktop entry", async 
   await expect(page.getByRole("button", { name: "Mute sound" })).toHaveAttribute("aria-pressed", "false");
 });
 
-test("production intro keeps the official emblem and narration-led flow", async ({ page }) => {
+test("gold handoff transfers the story completely into TAS HQ", async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 820 });
-  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await page.evaluate(() => {
+    const trackedWindow = window as typeof window & { __tasHandoffSeen?: boolean };
+    trackedWindow.__tasHandoffSeen = false;
+    const observer = new MutationObserver(() => {
+      if (document.querySelector('[aria-label="Transitioning into TAS HQ"]')) {
+        trackedWindow.__tasHandoffSeen = true;
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
   await page.getByRole("button", { name: "Replay Introduction" }).click();
 
-  await expect(page.getByText("Neil Stutes", { exact: true })).toBeVisible({ timeout: 5_000 });
-  await expect(page.getByRole("img", { name: "Gent Ascend Collective emblem" })).toHaveAttribute("src", /gac-icon/);
-  await expect(page.getByText("Creative Systems Architect", { exact: true })).toBeVisible();
-  await expect(page.getByText("Presents", { exact: true })).toBeVisible({ timeout: 5_000 });
-  await expect(page.getByRole("heading", { name: "Welcome Blair" })).toBeVisible({ timeout: 8_000 });
+  const tasIntro = page.getByLabel("TAS HQ executive introduction");
+  await expect(tasIntro).toBeVisible({ timeout: 6_000 });
+  await expect.poll(() => page.evaluate(() => Boolean((window as typeof window & { __tasHandoffSeen?: boolean }).__tasHandoffSeen))).toBe(true);
+  await expect(tasIntro.getByRole("img", { name: "TAS HQ emblem" })).toBeVisible();
+  await expect(tasIntro.getByRole("heading", { name: "TAS HQ", exact: true })).toBeVisible({ timeout: 9_000 });
+  await expect(tasIntro.getByText("AI-Powered Employee Operating System")).toBeVisible();
+  await expect(tasIntro.getByText(/strengthen communication, knowledge, service, and culture/i)).toBeVisible();
+  await expect(tasIntro.getByText("Neil Stutes", { exact: true })).toHaveCount(0);
+  await expect(tasIntro.getByRole("img", { name: "Gent Ascend Collective emblem" })).toHaveCount(0);
+  await expect(tasIntro.getByRole("button", { name: "Enter Experience" })).toBeVisible();
 });
 
 test("mobile access portal is intentional, readable, and touch sized", async ({ page }) => {
@@ -93,7 +112,7 @@ test("mobile access portal is intentional, readable, and touch sized", async ({ 
   const primaryAction = page.getByRole("button", { name: "Begin Executive Preview with sound" });
   const emblem = page.getByRole("img", { name: "Gent Ascend Collective emblem" });
   await expect(emblem).toBeVisible();
-  await expect(page.getByText("Blair", { exact: true })).toBeVisible();
+  await expect(page.getByText("Blair Vidrine", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Continue Without Audio" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Replay Introduction" })).toBeVisible();
 
@@ -163,7 +182,8 @@ test("narration controls and return path remain operable", async ({ page }) => {
   await expect(page.getByLabel("Onyx narration transcript")).toBeVisible();
   await page.getByRole("button", { name: "Continue Without Audio" }).click();
   await page.getByRole("button", { name: "Return to Introduction" }).click();
-  await expect(page.getByRole("heading", { name: "Welcome Blair" })).toBeVisible();
+  await expect(page.getByLabel("TAS HQ executive introduction")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "TAS HQ", exact: true })).toBeVisible();
 });
 
 test("mobile layout stacks platforms without horizontal overflow", async ({ page }) => {

@@ -438,10 +438,19 @@ button {
 .access-blair {
   margin-top: 0.15rem;
   color: #f6f2e9;
-  font-size: clamp(2.7rem, 5.5vw, 4.8rem);
+  font-size: clamp(2.6rem, 5vw, 4.25rem);
   line-height: 0.86;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.055em;
+  white-space: nowrap;
+}
+
+.access-company {
+  margin-top: 0.45rem;
+  color: #c7aa71;
+  font-size: clamp(0.64rem, 0.9vw, 0.78rem);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
 }
 
 .access-purpose {
@@ -452,13 +461,29 @@ button {
   letter-spacing: 0.025em;
 }
 
-.access-purpose p:last-child {
-  margin-top: 0.3rem;
-  color: #818992;
-  font-family: ui-sans-serif, sans-serif;
-  font-size: 0.62rem;
+.access-purpose p {
+  max-width: 36rem;
+  margin-inline: auto;
+  line-height: 1.45;
+}
+
+.access-production-credit {
+  display: flex;
+  margin-top: 0.7rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  color: #696f75;
+  font-size: 0.48rem;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
+}
+
+.access-production-credit i {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #8d7448;
 }
 
 .access-actions {
@@ -724,8 +749,8 @@ button {
   }
 
   .access-blair {
-    font-size: clamp(3.1rem, 15vw, 4.2rem);
-    letter-spacing: 0.06em;
+    font-size: clamp(2.55rem, 11.5vw, 3.35rem);
+    letter-spacing: 0.025em;
   }
 
   .access-purpose {
@@ -734,9 +759,17 @@ button {
     line-height: 1.35;
   }
 
-  .access-purpose p:last-child {
-    font-size: 0.56rem;
-    line-height: 1.5;
+  .access-company {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+  }
+
+  .access-production-credit {
+    max-width: 21rem;
+    flex-wrap: wrap;
+    gap: 0.28rem 0.45rem;
+    font-size: 0.43rem;
+    line-height: 1.4;
   }
 
   .access-actions {
@@ -786,7 +819,7 @@ button {
   }
 
   .access-blair {
-    font-size: 2.8rem;
+    font-size: 2.45rem;
   }
 
   .access-purpose {
@@ -822,6 +855,337 @@ button {
 
   .production-presents {
     margin-top: 0.7rem;
+  }
+}
+
+/* GAC-to-TAS story handoff and Blair-focused TAS introduction */
+
+.opening-handoff {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(77, 62, 35, 0.05), transparent 40%),
+    #010202;
+}
+
+.handoff-gold-sweep {
+  display: block;
+  width: 72vw;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(203, 169, 103, 0.2) 28%, rgba(248, 222, 167, 0.82) 50%, rgba(203, 169, 103, 0.2) 72%, transparent);
+  box-shadow: 0 0 1rem rgba(205, 170, 101, 0.12);
+}
+
+.tas-executive-intro {
+  position: absolute;
+  inset: 0;
+  min-height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(36, 78, 47, 0.2), transparent 27%),
+    radial-gradient(ellipse at 50% 52%, rgba(120, 91, 46, 0.1), transparent 40%),
+    linear-gradient(155deg, #020303, #090c0a 48%, #020302);
+}
+
+.tas-intro-atmosphere {
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(44, 103, 58, 0.14), transparent 21%),
+    radial-gradient(ellipse at 50% 45%, transparent 30%, rgba(186, 150, 87, 0.06) 30.2%, transparent 30.5%),
+    radial-gradient(ellipse at 50% 45%, transparent 40%, rgba(76, 93, 79, 0.055) 40.2%, transparent 40.5%);
+  animation: tas-atmosphere-breathe 10s ease-in-out infinite alternate;
+}
+
+.tas-intro-architecture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.42;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(187, 151, 86, 0.1) 50%, transparent calc(50% + 1px)),
+    linear-gradient(132deg, transparent 49.92%, rgba(105, 123, 107, 0.055) 50%, transparent 50.08%),
+    linear-gradient(48deg, transparent 49.92%, rgba(187, 151, 86, 0.05) 50%, transparent 50.08%);
+  mask-image: radial-gradient(ellipse at 50% 45%, black, transparent 74%);
+}
+
+.tas-intro-architecture::before,
+.tas-intro-architecture::after {
+  position: absolute;
+  inset: 8% 10%;
+  border: 1px solid rgba(177, 145, 87, 0.07);
+  content: "";
+  clip-path: polygon(19% 0, 81% 0, 100% 22%, 100% 78%, 81% 100%, 19% 100%, 0 78%, 0 22%);
+}
+
+.tas-intro-architecture::after {
+  inset: 15% 18%;
+  border-color: rgba(65, 107, 75, 0.1);
+}
+
+.tas-intro-floor {
+  position: absolute;
+  inset: 53% -15% -24%;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(rgba(176, 144, 86, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 144, 86, 0.14) 1px, transparent 1px);
+  background-size: 5.5rem 5.5rem;
+  transform: perspective(30rem) rotateX(67deg);
+  transform-origin: top;
+  mask-image: linear-gradient(to bottom, black, transparent 74%);
+}
+
+.tas-intro-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  min-height: 100svh;
+  width: min(100%, 74rem);
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding:
+    max(1.25rem, env(safe-area-inset-top))
+    max(1.25rem, env(safe-area-inset-right))
+    max(1.25rem, env(safe-area-inset-bottom))
+    max(1.25rem, env(safe-area-inset-left));
+}
+
+.tas-intro-emblem-field {
+  position: relative;
+  width: clamp(18rem, min(39vw, 44svh), 28rem);
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  isolation: isolate;
+}
+
+.tas-intro-emblem {
+  position: absolute;
+  z-index: 3;
+  inset: 7%;
+  animation: tas-emblem-breathe 7.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 1.7rem 2.5rem rgba(0, 0, 0, 0.66));
+}
+
+.tas-precision-ring {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.tas-precision-ring-outer {
+  inset: 0;
+  background: conic-gradient(from 22deg, transparent 0 12%, rgba(183, 150, 91, 0.48) 12.2% 14%, transparent 14.3% 43%, rgba(75, 119, 81, 0.42) 43.2% 44%, transparent 44.3% 72%, rgba(183, 150, 91, 0.42) 72.2% 74%, transparent 74.3%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px));
+  animation: bezel-rotate 58s linear infinite;
+}
+
+.tas-precision-ring-inner {
+  inset: 4%;
+  border: 1px solid rgba(183, 150, 91, 0.18);
+  border-right-color: rgba(76, 120, 82, 0.32);
+  animation: bezel-rotate-reverse 72s linear infinite;
+}
+
+.tas-intro-metal-sweep {
+  position: absolute;
+  inset: 0;
+  width: 38%;
+  background: linear-gradient(90deg, transparent, rgba(255, 238, 201, 0.58), transparent);
+  mix-blend-mode: screen;
+  -webkit-mask: center / contain no-repeat url("/tas-hq-icon.png");
+  mask: center / contain no-repeat url("/tas-hq-icon.png");
+  animation: tas-metal-light-sweep 8.5s ease-in-out infinite;
+}
+
+.tas-intro-reflection {
+  position: absolute;
+  z-index: 0;
+  right: 14%;
+  bottom: -4%;
+  left: 14%;
+  height: 11%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(180, 146, 86, 0.17), rgba(51, 105, 62, 0.08) 42%, transparent 72%);
+  filter: blur(15px);
+}
+
+.tas-intro-copy {
+  max-width: 48rem;
+  margin-top: clamp(0.65rem, 1.5vh, 1.2rem);
+  text-align: center;
+}
+
+.tas-intro-eyebrow {
+  color: #809184;
+}
+
+.tas-intro-title {
+  margin-top: 0.55rem;
+  color: #f0ece3;
+  font-size: clamp(2.5rem, 5vw, 4.6rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.tas-intro-category {
+  margin-top: 0.8rem;
+  color: #c0a36c;
+  font-size: clamp(0.6rem, 0.85vw, 0.74rem);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+}
+
+.tas-intro-supporting-copy {
+  max-width: 43rem;
+  margin: 0.9rem auto 0;
+  color: #a7aaa5;
+  font-family: "Iowan Old Style", "Baskerville", serif;
+  font-size: clamp(0.88rem, 1.2vw, 1.06rem);
+  line-height: 1.55;
+  letter-spacing: 0.025em;
+}
+
+.tas-intro-caption-zone {
+  display: flex;
+  min-height: 2.5rem;
+  margin-top: 0.6rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.tas-intro-caption-zone p {
+  max-width: 44rem;
+  color: #ddd8cf;
+  font-family: "Iowan Old Style", "Baskerville", serif;
+  font-size: clamp(0.86rem, 1.1vw, 1rem);
+  letter-spacing: 0.045em;
+  text-align: center;
+}
+
+.tas-intro-actions {
+  width: min(100%, 21rem);
+  min-height: 2.8rem;
+}
+
+.tas-intro-actions > .executive-button + .executive-button {
+  margin-top: 0.35rem;
+}
+
+.tas-intro-live-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.tas-intro-live-controls button {
+  border: 0;
+  background: transparent;
+  padding: 0.55rem 0.2rem;
+  color: #898d88;
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.17em;
+  cursor: pointer;
+  transition: color 350ms ease;
+}
+
+.tas-intro-live-controls button:hover,
+.tas-intro-live-controls button:focus-visible {
+  color: #e4ded3;
+}
+
+.tas-intro-live-controls button:focus-visible {
+  outline: 1px solid #b99a62;
+  outline-offset: 4px;
+}
+
+.tas-intro-live-controls span {
+  width: 1px;
+  height: 0.8rem;
+  background: rgba(182, 149, 89, 0.25);
+}
+
+@keyframes tas-atmosphere-breathe {
+  from { opacity: 0.72; transform: scale(0.985); }
+  to { opacity: 1; transform: scale(1.025); }
+}
+
+@keyframes tas-emblem-breathe {
+  from { transform: scale(0.994); }
+  to { transform: scale(1.01); }
+}
+
+@keyframes tas-metal-light-sweep {
+  0%, 25% { opacity: 0; transform: translateX(-150%); }
+  43% { opacity: 0.72; }
+  62%, 100% { opacity: 0; transform: translateX(330%); }
+}
+
+@media (max-width: 767px) {
+  .tas-intro-content {
+    justify-content: flex-start;
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .tas-intro-emblem-field {
+    width: min(76vw, 20rem);
+  }
+
+  .tas-intro-title {
+    font-size: clamp(2.7rem, 14vw, 3.8rem);
+  }
+
+  .tas-intro-category {
+    font-size: 0.58rem;
+    line-height: 1.5;
+    letter-spacing: 0.16em;
+  }
+
+  .tas-intro-supporting-copy {
+    max-width: 22rem;
+    font-size: 0.91rem;
+    line-height: 1.45;
+  }
+
+  .tas-intro-actions {
+    width: 100%;
+    max-width: 22rem;
+  }
+}
+
+@media (max-height: 720px) and (max-width: 767px) {
+  .tas-intro-emblem-field {
+    width: min(54vw, 14rem);
+  }
+
+  .tas-intro-copy {
+    margin-top: 0.25rem;
+  }
+
+  .tas-intro-title {
+    font-size: 2.65rem;
+  }
+
+  .tas-intro-supporting-copy {
+    margin-top: 0.55rem;
+    font-size: 0.8rem;
+  }
+
+  .tas-intro-caption-zone {
+    min-height: 2rem;
+    margin-top: 0.2rem;
   }
 }
 

@@ -3,25 +3,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, MotionConfig, useReducedMotion } from "motion/react";
 import { ExecutiveAccessPortal } from "./ExecutiveAccessPortal";
-import { GacIntro } from "./GacIntro";
 import { Narration } from "./Narration";
 import { OPENING_NARRATION } from "./narration-script";
-import { TasReveal } from "./TasReveal";
-import { WelcomeScreen } from "./WelcomeScreen";
+import { OpeningHandoff } from "./OpeningHandoff";
+import { TasExecutiveIntro } from "./TasExecutiveIntro";
 import { useExecutiveAudio } from "./useExecutiveAudio";
 import { ExecutiveVisionGateway } from "@/components/gateway/ExecutiveVisionGateway";
 import { GatewayTransition } from "@/components/gateway/GatewayTransition";
 
-type OpeningStage = "access" | "identity" | "power" | "welcome" | "gateway-transition" | "gateway";
+type OpeningStage = "access" | "handoff" | "tas-intro" | "gateway-transition" | "gateway";
 
 export function ExecutiveOpening() {
   const [stage, setStage] = useState<OpeningStage>("access");
   const [accessConfirmed, setAccessConfirmed] = useState(false);
-  const [showPresents, setShowPresents] = useState(false);
   const [narrationActive, setNarrationActive] = useState(false);
+  const [narrationFinished, setNarrationFinished] = useState(false);
+  const [tasCopyVisible, setTasCopyVisible] = useState(false);
   const [caption, setCaption] = useState("");
   const [muted, setMutedState] = useState(false);
-  const [entered, setEntered] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const { startAmbient, playNarration, stopNarration, setMuted } = useExecutiveAudio();
 
@@ -29,33 +28,36 @@ export function ExecutiveOpening() {
     void startAmbient();
     setMuted(silent);
     setMutedState(silent);
-    setShowPresents(false);
     setNarrationActive(false);
+    setNarrationFinished(false);
+    setTasCopyVisible(false);
     setCaption("");
     setAccessConfirmed(true);
   }, [muted, setMuted, startAmbient]);
 
   useEffect(() => {
     if (stage !== "access" || !accessConfirmed) return;
-    const timer = window.setTimeout(() => setStage("identity"), prefersReducedMotion ? 260 : 850);
+    const timer = window.setTimeout(() => setStage("handoff"), prefersReducedMotion ? 220 : 760);
     return () => window.clearTimeout(timer);
   }, [accessConfirmed, prefersReducedMotion, stage]);
 
   useEffect(() => {
-    if (stage !== "identity") return;
-    const presentsTimer = window.setTimeout(() => setShowPresents(true), prefersReducedMotion ? 500 : 2500);
-    const narrationTimer = window.setTimeout(() => setNarrationActive(true), prefersReducedMotion ? 1100 : 4100);
-    return () => {
-      window.clearTimeout(presentsTimer);
-      window.clearTimeout(narrationTimer);
-    };
+    if (stage !== "handoff") return;
+    const timer = window.setTimeout(() => setStage("tas-intro"), prefersReducedMotion ? 320 : 1150);
+    return () => window.clearTimeout(timer);
   }, [prefersReducedMotion, stage]);
 
   useEffect(() => {
-    if (stage !== "power") return;
-    const timer = window.setTimeout(() => setStage("welcome"), prefersReducedMotion ? 1200 : 5000);
-    return () => window.clearTimeout(timer);
-  }, [prefersReducedMotion, stage]);
+    if (stage !== "tas-intro" || narrationFinished) return;
+    const narrationTimer = window.setTimeout(() => setNarrationActive(true), prefersReducedMotion ? 180 : 420);
+    return () => window.clearTimeout(narrationTimer);
+  }, [narrationFinished, prefersReducedMotion, stage]);
+
+  useEffect(() => {
+    if (stage !== "tas-intro" || tasCopyVisible) return;
+    const copyTimer = window.setTimeout(() => setTasCopyVisible(true), prefersReducedMotion ? 520 : 3400);
+    return () => window.clearTimeout(copyTimer);
+  }, [prefersReducedMotion, stage, tasCopyVisible]);
 
   useEffect(() => {
     if (stage !== "gateway-transition") return;
@@ -65,8 +67,7 @@ export function ExecutiveOpening() {
 
   const completeNarration = useCallback(() => {
     setNarrationActive(false);
-    setCaption("");
-    setStage("power");
+    setNarrationFinished(true);
   }, []);
 
   const replay = useCallback(() => {
@@ -74,20 +75,24 @@ export function ExecutiveOpening() {
     void startAmbient();
     setMuted(false);
     setMutedState(false);
-    setEntered(false);
-    setShowPresents(false);
     setNarrationActive(false);
+    setNarrationFinished(false);
+    setTasCopyVisible(false);
     setCaption("");
     setAccessConfirmed(false);
-    setStage("identity");
+    setStage("handoff");
   }, [setMuted, startAmbient, stopNarration]);
 
   const beginSilent = useCallback(() => begin(true), [begin]);
 
   const continueSilent = useCallback(() => {
+    stopNarration();
     setMuted(true);
     setMutedState(true);
-  }, [setMuted]);
+    setNarrationActive(false);
+    setNarrationFinished(true);
+    setCaption("");
+  }, [setMuted, stopNarration]);
 
   const toggleAccessSound = useCallback(() => {
     const nextMuted = !muted;
@@ -102,15 +107,19 @@ export function ExecutiveOpening() {
   }, [setMuted]);
 
   const enterExperience = useCallback(() => {
-    setEntered(true);
     setStage("gateway-transition");
     window.dispatchEvent(new CustomEvent("tas:enter-experience"));
   }, []);
 
   const returnToIntroduction = useCallback(() => {
-    setEntered(false);
-    setStage("welcome");
+    setNarrationActive(false);
+    setNarrationFinished(true);
+    setTasCopyVisible(true);
+    setCaption("");
+    setStage("tas-intro");
   }, []);
+
+  const tasIntroComplete = narrationFinished && tasCopyVisible;
 
   return (
     <MotionConfig reducedMotion="user">
@@ -127,16 +136,18 @@ export function ExecutiveOpening() {
               onReplay={() => begin()}
             />
           )}
-          {stage === "identity" && <GacIntro key="identity" showPresents={showPresents} caption={caption} />}
-          {stage === "power" && <TasReveal key="power" />}
-          {stage === "welcome" && (
-            <WelcomeScreen
-              key="welcome"
+          {stage === "handoff" && <OpeningHandoff key="handoff" />}
+          {stage === "tas-intro" && (
+            <TasExecutiveIntro
+              key="tas-intro"
+              caption={caption}
+              copyVisible={tasCopyVisible}
+              complete={tasIntroComplete}
               muted={muted}
-              entered={entered}
               onEnter={enterExperience}
               onContinueSilent={continueSilent}
               onReplay={replay}
+              onToggleMute={() => setAudioMuted(!muted)}
             />
           )}
           {stage === "gateway-transition" && <GatewayTransition key="gateway-transition" />}
